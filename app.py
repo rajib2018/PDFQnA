@@ -5,17 +5,22 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA # Keep import for now, might switch later
 from langchain_huggingface import HuggingFaceEndpoint
 import sys
 import traceback
+
+# Import necessary components for alternative chain creation
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain_core.prompts import ChatPromptTemplate
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
 # You can obtain a token from your Hugging Face account settings
 # It's recommended to use Streamlit secrets for actual deployment
 # Ensure this token is set before the app logic
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "Nhf_hNmlmYDithuvpSyxGbiGzyADmJOwMPgogs"
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
 
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
@@ -73,16 +78,27 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Create a RetrievalQA chain with limited number of retrieved documents
-            qa_chain = RetrievalQA.from_chain_type(
-                llm, retriever=st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}) # Limited to 3 documents
-            )
+            # Define the prompt template
+            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
+<context>
+{context}
+</context>
+Question: {input}""")
+
+            # Create the document combination chain
+            document_chain = create_stuff_documents_chain(llm, prompt)
+
+            # Create the retrieval chain
+            retrieval_chain = create_retrieval_chain(st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}), document_chain)
+
 
             # Get the answer
             with st.spinner("Getting answer..."):
-                answer = qa_chain.invoke(question)
+                # Use the new retrieval chain
+                answer = retrieval_chain.invoke({"input": question})
             st.write("Answer:")
-            st.write(answer['result'])
+            st.write(answer['answer']) # Access the answer using 'answer' key
+
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
             st.error(traceback.format_exc())
@@ -102,11 +118,16 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA # Keep import for now, might switch later
 from langchain_huggingface import HuggingFaceEndpoint
 import subprocess
 import sys
 import traceback
+
+# Import necessary components for alternative chain creation
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain_core.prompts import ChatPromptTemplate
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
@@ -171,16 +192,27 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Create a RetrievalQA chain with limited number of retrieved documents
-            qa_chain = RetrievalQA.from_chain_type(
-                llm, retriever=st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}) # Limited to 3 documents
-            )
+            # Define the prompt template
+            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
+<context>
+{context}
+</context>
+Question: {input}""")
+
+            # Create the document combination chain
+            document_chain = create_stuff_documents_chain(llm, prompt)
+
+            # Create the retrieval chain
+            retrieval_chain = create_retrieval_chain(st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}), document_chain)
+
 
             # Get the answer
             with st.spinner("Getting answer..."):
-                answer = qa_chain.invoke(question)
+                # Use the new retrieval chain
+                answer = retrieval_chain.invoke({"input": question})
             st.write("Answer:")
-            st.write(answer['result'])
+            st.write(answer['answer']) # Access the answer using 'answer' key
+
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
             st.error(traceback.format_exc())
