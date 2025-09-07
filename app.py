@@ -7,13 +7,14 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_huggingface import HuggingFaceEndpoint
+import sys
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
 # You can obtain a token from your Hugging Face account settings
 # It's recommended to use Streamlit secrets for actual deployment
 # Ensure this token is set before the app logic
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = ""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
 
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
@@ -65,7 +66,7 @@ if st.session_state['vector_store'] is not None:
         repo_id = "google/flan-t5-large"
         try:
             llm = HuggingFaceEndpoint(
-                repo_id=repo_id, temperature=0.5 # Removed max_length
+                repo_id=repo_id, temperature=0.5
             )
 
             # Create a RetrievalQA chain
@@ -85,6 +86,7 @@ else:
 
 # Add code to run the streamlit app
 if __name__ == "__main__":
+    import subprocess # Moved import here
     # Save the script to a temporary file
     script_content = """
 import streamlit as st
