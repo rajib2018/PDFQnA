@@ -14,13 +14,14 @@ import traceback
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain.chains.question_answering import load_qa_chain # Import load_qa_chain
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
 # You can obtain a token from your Hugging Face account settings
 # It's recommended to use Streamlit secrets for actual deployment
 # Ensure this token is set before the app logic
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = "YOUR_HF_API_TOKEN"
 
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
@@ -78,22 +79,16 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Define the prompt template using single-line string with newlines
-            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:\n<context>\n{context}\n</context>\nQuestion: {input}")
+            # Load the QA chain
+            qa_chain = load_qa_chain(llm, chain_type="stuff")
 
-            # Create the document combination chain
-            document_chain = create_stuff_documents_chain(llm, prompt)
-
-            # Create the retrieval chain
-            retrieval_chain = create_retrieval_chain(st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}), document_chain)
-
-
-            # Get the answer
+            # Perform similarity search and get the answer
             with st.spinner("Getting answer..."):
-                # Use the new retrieval chain
-                answer = retrieval_chain.invoke({"input": question})
+                docs = st.session_state['vector_store'].similarity_search(question)
+                answer = qa_chain.run(input_documents=docs, question=question)
+
             st.write("Answer:")
-            st.write(answer['answer']) # Access the answer using 'answer' key
+            st.write(answer)
 
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
@@ -124,6 +119,7 @@ import traceback
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain.chains.question_answering import load_qa_chain # Import load_qa_chain
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
@@ -188,22 +184,16 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Define the prompt template using single-line string with newlines
-            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:\n<context>\n{context}\n</context>\nQuestion: {input}")
+            # Load the QA chain
+            qa_chain = load_qa_chain(llm, chain_type="stuff")
 
-            # Create the document combination chain
-            document_chain = create_stuff_documents_chain(llm, prompt)
-
-            # Create the retrieval chain
-            retrieval_chain = create_retrieval_chain(st.session_state['vector_store'].as_retriever(search_kwargs={"k": 3}), document_chain)
-
-
-            # Get the answer
+            # Perform similarity search and get the answer
             with st.spinner("Getting answer..."):
-                # Use the new retrieval chain
-                answer = retrieval_chain.invoke({"input": question})
+                docs = st.session_state['vector_store'].similarity_search(question)
+                answer = qa_chain.run(input_documents=docs, question=question)
+
             st.write("Answer:")
-            st.write(answer['answer']) # Access the answer using 'answer' key
+            st.write(answer)
 
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
