@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_huggingface import HuggingFaceEndpoint
 import sys
-import traceback # Import the traceback module
+import traceback
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
@@ -20,7 +20,7 @@ os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
     if uploaded_file is not None:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf", mode="wb") as tmp_file:
             tmp_file.write(uploaded_file.getvalue())
             tmp_file_path = tmp_file.name
 
@@ -28,8 +28,10 @@ def process_pdf(uploaded_file):
             # Load and split the PDF
             loader = PyPDFLoader(tmp_file_path)
             documents = loader.load()
+            print(f"Number of documents loaded: {len(documents)}")
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
             text_chunks = text_splitter.split_documents(documents)
+            print(f"Number of text chunks created: {len(text_chunks)}")
 
             # Create embeddings and vector store
             embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -38,7 +40,7 @@ def process_pdf(uploaded_file):
             return vector_store
         except Exception as e:
             st.error(f"Error processing PDF: {e}")
-            st.error(traceback.format_exc()) # Print traceback
+            st.error(traceback.format_exc())
             return None
         finally:
             # Clean up the temporary file
@@ -83,7 +85,7 @@ if st.session_state['vector_store'] is not None:
             st.write(answer['result'])
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
-            st.error(traceback.format_exc()) # Print traceback
+            st.error(traceback.format_exc()) # Ensure traceback is printed here
 
 else:
     st.info("Please upload a PDF to get started.")
@@ -104,7 +106,7 @@ from langchain.chains import RetrievalQA
 from langchain_huggingface import HuggingFaceEndpoint
 import subprocess
 import sys
-import traceback # Import the traceback module
+import traceback
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
@@ -124,8 +126,10 @@ def process_pdf(uploaded_file):
             # Load and split the PDF
             loader = PyPDFLoader(tmp_file_path)
             documents = loader.load()
+            print(f"Number of documents loaded: {len(documents)}")
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
             text_chunks = text_splitter.split_documents(documents)
+            print(f"Number of text chunks created: {len(text_chunks)}")
 
             # Create embeddings and vector store
             embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -134,7 +138,7 @@ def process_pdf(uploaded_file):
             return vector_store
         except Exception as e:
             st.error(f"Error processing PDF: {e}")
-            st.error(traceback.format_exc()) # Print traceback
+            st.error(traceback.format_exc())
             return None
         finally:
             # Clean up the temporary file
@@ -179,7 +183,7 @@ if st.session_state['vector_store'] is not None:
             st.write(answer['result'])
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
-            st.error(traceback.format_exc()) # Print traceback
+            st.error(traceback.format_exc())
 
 else:
     st.info("Please upload a PDF to get started.")
