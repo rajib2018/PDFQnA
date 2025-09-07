@@ -15,7 +15,7 @@ import traceback # Import the traceback module
 # You can obtain a token from your Hugging Face account settings
 # It's recommended to use Streamlit secrets for actual deployment
 # Ensure this token is set before the app logic
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "YOUR_HF_API_TOKEN"
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
 
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
