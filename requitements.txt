@@ -1,5 +1,0 @@
-streamlit
-langchain
-langchain_community.embeddings
-langchain_community.vectorstores
-langchain_huggingface
