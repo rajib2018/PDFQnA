@@ -8,13 +8,14 @@ from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain_huggingface import HuggingFaceEndpoint
 import sys
+import traceback # Import the traceback module
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
 # You can obtain a token from your Hugging Face account settings
 # It's recommended to use Streamlit secrets for actual deployment
 # Ensure this token is set before the app logic
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = "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"
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = "YOUR_HF_API_TOKEN"
 
 def process_pdf(uploaded_file):
     """Processes the uploaded PDF, creates a vector store."""
@@ -37,6 +38,7 @@ def process_pdf(uploaded_file):
             return vector_store
         except Exception as e:
             st.error(f"Error processing PDF: {e}")
+            st.error(traceback.format_exc()) # Print traceback
             return None
         finally:
             # Clean up the temporary file
@@ -81,12 +83,14 @@ if st.session_state['vector_store'] is not None:
             st.write(answer['result'])
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
+            st.error(traceback.format_exc()) # Print traceback
+
 else:
     st.info("Please upload a PDF to get started.")
 
 # Add code to run the streamlit app
 if __name__ == "__main__":
-    import subprocess # Moved import here
+    import subprocess
     # Save the script to a temporary file
     script_content = """
 import streamlit as st
@@ -100,6 +104,7 @@ from langchain.chains import RetrievalQA
 from langchain_huggingface import HuggingFaceEndpoint
 import subprocess
 import sys
+import traceback # Import the traceback module
 
 # Set the Hugging Face Hub API token as an environment variable
 # Replace "YOUR_HF_API_TOKEN" with your actual token
@@ -129,6 +134,7 @@ def process_pdf(uploaded_file):
             return vector_store
         except Exception as e:
             st.error(f"Error processing PDF: {e}")
+            st.error(traceback.format_exc()) # Print traceback
             return None
         finally:
             # Clean up the temporary file
@@ -158,7 +164,7 @@ if st.session_state['vector_store'] is not None:
         repo_id = "google/flan-t5-large"
         try:
             llm = HuggingFaceEndpoint(
-                repo_id=repo_id, temperature=0.5 # Removed max_length
+                repo_id=repo_id, temperature=0.5
             )
 
             # Create a RetrievalQA chain
@@ -173,6 +179,8 @@ if st.session_state['vector_store'] is not None:
             st.write(answer['result'])
         except Exception as e:
             st.error(f"An error occurred while getting the answer: {e}")
+            st.error(traceback.format_exc()) # Print traceback
+
 else:
     st.info("Please upload a PDF to get started.")
 """
