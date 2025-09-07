@@ -79,7 +79,7 @@ if st.session_state['vector_store'] is not None:
             )
 
             # Define the prompt template
-            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:"
+            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
 <context>
 {context}
 </context>
@@ -193,7 +193,7 @@ if st.session_state['vector_store'] is not None:
             )
 
             # Define the prompt template
-            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:")
+            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
 <context>
 {context}
 </context>
