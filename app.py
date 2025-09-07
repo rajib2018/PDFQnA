@@ -78,12 +78,8 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Define the prompt template
-            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
-<context>
-{context}
-</context>
-Question: {input}""")
+            # Define the prompt template using single-line string with newlines
+            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:\n<context>\n{context}\n</context>\nQuestion: {input}")
 
             # Create the document combination chain
             document_chain = create_stuff_documents_chain(llm, prompt)
@@ -192,12 +188,8 @@ if st.session_state['vector_store'] is not None:
                 repo_id=repo_id, temperature=0.5
             )
 
-            # Define the prompt template
-            prompt = ChatPromptTemplate.from_template("""Answer the following question based only on the provided context:
-<context>
-{context}
-</context>
-Question: {input}""")
+            # Define the prompt template using single-line string with newlines
+            prompt = ChatPromptTemplate.from_template("Answer the following question based only on the provided context:\n<context>\n{context}\n</context>\nQuestion: {input}")
 
             # Create the document combination chain
             document_chain = create_stuff_documents_chain(llm, prompt)
